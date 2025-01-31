@@ -1,0 +1,415 @@
+{
+	"info": {
+		"_postman_id": "a4f5416c-7a5e-4f58-b291-280832e3fc21",
+		"name": "Altaivita. Cart",
+		"description": "Составьте коллекцию Postman, которая поможет провести смоук-тест корзины [https://altaivita.ru/](https://altaivita.ru/).\n\nКоллекция обязательно должна включать:\n\n-  добавление товара;\n    \n-  изменение количества товара (увеличение);\n    \n-  удаление товара.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36307248"
+	},
+	"item": [
+		{
+			"name": "Add_Product_Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Проверка на статус-код, успешное выполнение возвращает 200 код.\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "_userGUID=0:m6aqycu6:5p3oKAtZbZsh7~WIByGEppaK8GgWnSqe;",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "product_id",
+							"value": "6939",
+							"type": "text"
+						},
+						{
+							"key": "this_listId",
+							"value": "search_list",
+							"type": "text"
+						},
+						{
+							"key": "LANG_key",
+							"value": "ru",
+							"type": "text"
+						},
+						{
+							"key": "S_wh",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "S_CID",
+							"value": "{{CID}}",
+							"type": "text"
+						},
+						{
+							"key": "S_cur_code",
+							"value": "rub",
+							"type": "text"
+						},
+						{
+							"key": "S_koef",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "quantity",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "S_hint_code",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_customerID",
+							"value": "367019",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{BaseUrl}}add_products_to_cart_from_preview.php",
+					"host": [
+						"{{BaseUrl}}add_products_to_cart_from_preview",
+						"php"
+					]
+				},
+				"description": "Добавление товара в корзину.\n\nОбязательные параметры:\n\nproduct_id - идентификатор продукта (товара)\n\nS_wh (1 - да, 0 - нет) - наличие товара\n\nS_CID - идентификатор корзины (используется для связи с конкретной корзиной покупок пользователя, чтобы сервер знал, в какую корзину добавлять продукт)\n\nquantity - количество товара, добавляемого в корзину"
+			},
+			"response": []
+		},
+		{
+			"name": "Get_Cart_Contents",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Сохранение в переменные параметров item_id и product_id\r",
+							"// Создаем DOM-подобный объект с jQuery для обработки HTML\r",
+							"const cheerio = require('cheerio');\r",
+							"const $ = cheerio.load(pm.response.text());\r",
+							"\r",
+							"// Извлекаем данные из элементов с классом js-cart-item\r",
+							"$('.js-cart-item').each(function() {\r",
+							"    let itemId = $(this).data('item-id'); // Получаем item-id\r",
+							"    let productId = $(this).data('item-product-id'); // Получаем product-id\r",
+							"\r",
+							"    // Сохраняем данные в переменные коллекции\r",
+							"    pm.collectionVariables.set(\"item_id\", itemId);\r",
+							"    pm.collectionVariables.set(\"product_id\", productId);\r",
+							"});\r",
+							"\r",
+							"// Выводим в консоль, чтобы проверить, что переменные сохраняются правильно\r",
+							"console.log(\"item_id: \" + pm.collectionVariables.get(\"item_id\"));\r",
+							"console.log(\"product_id: \" + pm.collectionVariables.get(\"product_id\"));\r",
+							"\r",
+							"//Проверка на статус-код, успешное выполнение возвращает 200 код.\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "_userGUID=0:m6aqycu6:5p3oKAtZbZsh7~WIByGEppaK8GgWnSqe; DIGI_CARTID=70122735177;",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}ajax_show_cart_preview.php?LANG_key=ru&S_CID={{CID}}",
+					"host": [
+						"{{BaseUrl}}ajax_show_cart_preview",
+						"php"
+					],
+					"query": [
+						{
+							"key": "LANG_key",
+							"value": "ru"
+						},
+						{
+							"key": "S_wh",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "S_CID",
+							"value": "{{CID}}"
+						},
+						{
+							"key": "S_cur_code",
+							"value": "rub",
+							"disabled": true
+						},
+						{
+							"key": "S_koef",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "S_hint_code",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "S_customerID",
+							"value": "367019",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Получение списка товаров в корзине.\n\nОбязательные параметры:\n\nLANG_key - язык интерфейса\n\nS_CID - идентификатор корзины (используется для связи с конкретной корзиной покупок пользователя, чтобы сервер знал, в какую корзину добавлять продукт)"
+			},
+			"response": []
+		},
+		{
+			"name": "Increase_Items_Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Проверка на статус-код, успешное выполнение возвращает 200 код.\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "_userGUID=0:m6aqycu6:5p3oKAtZbZsh7~WIByGEppaK8GgWnSqe;",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}action_with_basket_on_cart_page.php/?itemID={{item_id}}&quantity=2&action=update_quantity&LANG_key=ru&S_wh=1&S_CID={{CID}}&S_cur_code=rub&S_koef=1",
+					"host": [
+						"{{BaseUrl}}action_with_basket_on_cart_page",
+						"php"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "itemID",
+							"value": "{{item_id}}"
+						},
+						{
+							"key": "quantity",
+							"value": "2"
+						},
+						{
+							"key": "action",
+							"value": "update_quantity"
+						},
+						{
+							"key": "LANG_key",
+							"value": "ru"
+						},
+						{
+							"key": "S_wh",
+							"value": "1"
+						},
+						{
+							"key": "S_CID",
+							"value": "{{CID}}"
+						},
+						{
+							"key": "S_cur_code",
+							"value": "rub"
+						},
+						{
+							"key": "S_koef",
+							"value": "1"
+						},
+						{
+							"key": "S_hint_code",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "S_customerID",
+							"value": "367019",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Изменение количества товаров в корзине.\n\nОбязательные параметры:\n\nitemID - идентификатор экземпляра продукта (товара)\n\nquantity - количество товара, добавляемого в корзину\n\naction - выполняемое действие (update_quantity - изменение кол-ва товара)\n\nS_wh (1 - да, 0 - нет) - наличие товара\n\nS_CID - идентификатор корзины (используется для связи с конкретной корзиной покупок пользователя, чтобы сервер знал, в какую корзину добавлять продукт)\n\nS_cur_code - код курса валюты"
+			},
+			"response": []
+		},
+		{
+			"name": "Removing_Items_Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Проверка на статус-код, успешное выполнение возвращает 200 код.\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "_userGUID=0:m6aqycu6:5p3oKAtZbZsh7~WIByGEppaK8GgWnSqe;",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "product_id",
+							"value": "{{product_id}}",
+							"type": "text"
+						},
+						{
+							"key": "LANG_key",
+							"value": "ru",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_wh",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_CID",
+							"value": "{{CID}}",
+							"type": "text"
+						},
+						{
+							"key": "S_cur_code",
+							"value": "rub",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_koef",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_hint_code",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "S_customerID",
+							"value": "367019",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{BaseUrl}}delete_products_from_cart_preview.php",
+					"host": [
+						"{{BaseUrl}}delete_products_from_cart_preview",
+						"php"
+					]
+				},
+				"description": "Удаление товаров из корзины.\n\nОбязательные параметры:\n\nproduct_id - идентификатор продукта (товара)\n\nS_CID - идентификатор корзины (используется для связи с конкретной корзиной покупок пользователя, чтобы сервер знал, в какую корзину добавлять продукт)"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": "https://altaivita.ru/engine/cart/",
+			"type": "string"
+		},
+		{
+			"key": "CID",
+			"value": "702bf3e9607ccaa9a3c98f67811520b4",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": ""
+		},
+		{
+			"key": "item_id",
+			"value": ""
+		}
+	]
+}
