@@ -26,7 +26,7 @@ class TestCartUi:
         with allure.step("Ввод полного названия товара и поиск"):
             prod_name = "Алтайский ключ, 30 капсул по 500 мг. Набор из 6 шт"
             cart_ui.search_for_product(prod_name)
-            # sleep(2)  # Добавлены для наглядности выполнения теста
+            sleep(3)  # Добавлены для наглядности выполнения теста
         with allure.step("Поиск товара в результатах поиска"):
             product_title, product_price = cart_ui.find_product(prod_name)
             # sleep(2)  # Добавлены для наглядности выполнения теста
